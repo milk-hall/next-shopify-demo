@@ -40,7 +40,7 @@ export default function Home() {
         <Button variant="contained" color="primary" onClick={()=>handleGoto('/products')}>
           BROWSE PRODUCTS
         </Button>
-        <Button variant="contained">GET SOURCE CODE</Button>
+        <Button variant="contained" onClick={()=>{ router.push('https://github.com/milk-hall/next-shopify-demo')}}>GET SOURCE CODE</Button>
       </div>
     </Layout>
   );
