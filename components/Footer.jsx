@@ -1,9 +1,11 @@
-import Head from 'next/head'
+import { Container } from '@material-ui/core'
 
 const Footer = () => {
   return (
     <footer>
-      @copyright
+      <Container >
+        @copyright
+      </Container>
     </footer>
   )
 }

@@ -7,9 +7,9 @@ const NavBar = () => {
     router.push(url)
   }
   return (
-    <AppBar position="static">
+    <AppBar position="static" color='primary'>
       <Container>
-        <Toolbar>
+        <Toolbar disableGutters>
           <Typography variant="h6" style={{ flexGrow: 1 }} color="inherit">
             Next Shopify Storefront
           </Typography>
