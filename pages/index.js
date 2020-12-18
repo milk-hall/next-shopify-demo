@@ -1,4 +1,4 @@
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, makeStyles, Typography, useTheme } from "@material-ui/core";
 import { useRouter } from "next/router";
 import Layout from "../components/Layout";
 
@@ -11,8 +11,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
-  const classes = useStyles();
+function Home() {
+  const theme = useTheme()
+  const classes = useStyles(theme);
   const router = useRouter();
   const handleGoto = (url) => {
     router.push(url)
@@ -45,3 +46,4 @@ export default function Home() {
     </Layout>
   );
 }
+export default Home

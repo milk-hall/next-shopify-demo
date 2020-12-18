@@ -13,9 +13,13 @@
     "@material-ui/icons": "^4.11.2",
     "deepmerge": "^4.2.2",
     "graphql": "^15.4.0",
+    "hox": "^1.1.2",
     "lodash": "^4.17.20",
     "next": "10.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.12.0"
   }
 }

@@ -15,7 +15,7 @@ const NavBar = () => {
           </Typography>
           <Button size='large' color="inherit" onClick={()=>handleGoto('/')}>HOME</Button>
           <Button size='large' color="inherit" onClick={()=>handleGoto('/products')}>PRODUCTS</Button>
-          <IconButton size='large' color="inherit" onClick={()=>handleGoto('/cart')}>
+          <IconButton size='medium' color="inherit" onClick={()=>handleGoto('/cart')}>
             <Badge badgeContent={3} color="secondary">
               <ShoppingBasketIcon />
             </Badge>

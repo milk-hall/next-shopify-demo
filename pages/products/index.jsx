@@ -1,8 +1,9 @@
-import { useApolloClient } from "@apollo/client"
 import { InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../components/Layout"
-import { initializeApollo } from "../../lib/apollo"
+import DataCardList from "./components/DataCardList";
+import useProducts from '../../models/products'
+import { getFirstPage } from "../../services/api";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -10,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
   }
 }));
 
@@ -51,13 +53,18 @@ const sortOpts = [
   }
 ];
 
-const Products = () => {
-  const apolloClient = initializeApollo()
-  const [selected,setSelected]=useState(6)
+const Products = ({initData}) => {
+  const { init } = useProducts()
+  const [selected, setSelected] = useState(0);
+  
   const classes = useStyles();
   const handleChange = (e) => {
     setSelected(e.target.value)
   }
+  useEffect(()=>{
+    console.log(initData)
+    init({initData})
+  },[])
   return (
     <Layout title='Products'>
       <div className={classes.toolbar}>
@@ -78,9 +85,24 @@ const Products = () => {
           </Select>
         </div>
       </div>
-      Products
+      <DataCardList />
     </Layout>
   )
 }
+
+export async function getStaticProps(context) {
+  
+  const { data } = await getFirstPage({
+    query: "",
+    sortKey: "BEST_SELLING",
+    reverse: false,
+  })
+  return {
+    props: {
+      initData:data.products
+    }, // will be passed to the page component as props
+  }
+}
+
 
 export default Products
