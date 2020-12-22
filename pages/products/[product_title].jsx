@@ -120,7 +120,9 @@ const ProductDetail = ({ data }) => {
                   onClick={handleSubmit}
                   color="primary"
                   variant="contained"
-                  className={classes.item}>
+                  className={classes.item}
+                  disabled={loading}
+                  >
                   {loading&&<CircularProgress disableShrink size={10} style={{color:'#fff'}} />}
                   ADD TO CART
                   </Button>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createModel } from "hox";
-import { getCheckout,replaceLineItems } from "../services/api";
+import { getCheckout,replaceLineItems,deleteLineItems } from "../services/api";
 
 function getLineItems(lineItems){
   return lineItems.map(({ node })=> ({ variantId: node.variant.id, quantity: node.quantity }));
@@ -31,6 +31,13 @@ function useCarts() {
     setLoading(false)
   }
 
+  const removeLineItem = async(id)=>{
+    setLoading(true)
+    const { data:res } = await deleteLineItems(id,data)
+    setData(res.checkoutLineItemsReplace.checkout);
+    setLoading(false)
+  }
+
   const checkoutNum = useMemo(() => {
     return data?.lineItems.edges.reduce((pre,item)=>item.node.quantity+pre,0)
   }, [data])
@@ -40,6 +47,7 @@ function useCarts() {
     loading,
     fetchCheckout,
     addLineItem,
+    removeLineItem,
     checkoutNum
     // loading,
   };

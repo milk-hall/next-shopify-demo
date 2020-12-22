@@ -59,7 +59,6 @@ export const PRODUCTS_QUERY = gql`
   }
 `;
 
-
 const PRODUCT_FRAGMENT = gql`
   fragment product on Product {
     title
@@ -154,7 +153,6 @@ export const CHECKOUT_FRAGMENT = gql`
   }
 `;
 
-
 const CHECKOUT_QUERY = gql`
   ${CHECKOUT_FRAGMENT}
   query checkout($checkoutId: ID!) {
@@ -168,7 +166,10 @@ const CHECKOUT_QUERY = gql`
 
 const CHECKOUT_LINE_ITEMS_REPLACE_MUTATION = gql`
   ${CHECKOUT_FRAGMENT}
-  mutation checkoutLineItemsReplace($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+  mutation checkoutLineItemsReplace(
+    $checkoutId: ID!
+    $lineItems: [CheckoutLineItemInput!]!
+  ) {
     checkoutLineItemsReplace(checkoutId: $checkoutId, lineItems: $lineItems) {
       checkout {
         ...checkout
@@ -176,7 +177,6 @@ const CHECKOUT_LINE_ITEMS_REPLACE_MUTATION = gql`
     }
   }
 `;
-
 
 export const getFirstPage = async (
   variables = {
@@ -208,31 +208,44 @@ export const getHandleProduct = async (variables) => {
   });
 };
 
-export const getCheckout = async()=>{
+export const getCheckout = async () => {
   let checkoutId;
-  checkoutId = localStorage.getItem('checkoutId');
+  checkoutId = localStorage.getItem("checkoutId");
   if (!checkoutId) {
-    const { data } = await client.mutate({ mutation: CHECKOUT_CREATE_MUTATION });
+    const { data } = await client.mutate({
+      mutation: CHECKOUT_CREATE_MUTATION,
+    });
     checkoutId = data.checkoutCreate.checkout.id;
-    localStorage.setItem('checkoutId', checkoutId); // 7 days
+    localStorage.setItem("checkoutId", checkoutId); // 7 days
   }
 
   const variables = {
-    checkoutId
+    checkoutId,
   };
 
   const res = await client.query({
     query: CHECKOUT_QUERY,
-    variables
+    variables,
   });
-  
-  return res
+
+  return res;
+};
+function getLineItems(lineItems){
+  return lineItems.map(({ node })=> ({ variantId: node.variant.id, quantity: node.quantity }));
 }
 
-export const replaceLineItems = async(variables)=>{
+export const replaceLineItems = async (variables) => {
   const res = await client.mutate({
     mutation: CHECKOUT_LINE_ITEMS_REPLACE_MUTATION,
-    variables
+    variables,
   });
-  return res
-}
+  return res;
+};
+
+export const deleteLineItems = async (variantId,data) => {
+  let checkoutId;
+  checkoutId = localStorage.getItem("checkoutId");
+  let lineItems = getLineItems(data.lineItems.edges);
+  lineItems = lineItems.filter(item=>item.variantId !== variantId)
+  return replaceLineItems({ checkoutId, lineItems })
+};

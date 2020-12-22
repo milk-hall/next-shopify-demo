@@ -9,7 +9,9 @@ const Layout = ({ title, children }) => {
       <Header title={title}></Header>
       <NavBar />
       <Container>
-        {children}
+        <div style={{ minHeight: '80vh' }}>
+          {children}
+        </div>
       </Container>
       <Footer />
     </>
