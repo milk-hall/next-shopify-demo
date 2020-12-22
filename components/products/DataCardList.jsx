@@ -10,7 +10,7 @@ const DataCardList = () => {
   const { edges = [], pageInfo } = data
   const hasNext = pageInfo.hasNextPage
   const handleMore = () => {
-    fetchMore({ ...router.query, cursor: edges[edges.length - 1].cursor });
+    fetchMore({ query: '', sortKey: 0, ...router.query, cursor: edges[edges.length - 1].cursor });
   }
   return (
     <>
