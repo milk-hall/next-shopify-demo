@@ -4,7 +4,8 @@ import Layout from "../../components/Layout"
 import DataCardList from "./components/DataCardList";
 import useProducts from '../../models/products'
 import { getFirstPage } from "../../services/api";
-
+import { useRouter } from "next/router";
+import { sortOpts } from '../../models/map'
 const useStyles = makeStyles((theme) => ({
   root: {},
   toolbar: {
@@ -15,60 +16,42 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const sortOpts = [
-  {
-    name: 'Best Selling',
-    sortKey: 'best_selling',
-    reverse: false
-  },
-  {
-    name: 'Newest',
-    sortKey: 'created_at',
-    reverse: true
-  },
-  {
-    name: 'Oldest',
-    sortKey: 'created_at',
-    reverse: false
-  },
-  {
-    name: 'Price (Low > High)',
-    sortKey: 'price',
-    reverse: false
-  },
-  {
-    name: 'Price (High > Low)',
-    sortKey: 'price',
-    reverse: true
-  },
-  {
-    name: 'Title (A - Z)',
-    sortKey: 'title',
-    reverse: false
-  },
-  {
-    name: 'Title (Z - A)',
-    sortKey: 'title',
-    reverse: true
-  }
-];
 
-const Products = ({initData}) => {
+const Products = ({ initData, query }) => {
   const { init } = useProducts()
+  const router = useRouter()
   const [selected, setSelected] = useState(0);
-  
+  const [searchValue, setSearchValue] = useState('');
+  const [variables, setVariables] = useState(query);
   const classes = useStyles();
   const handleChange = (e) => {
-    setSelected(e.target.value)
+    const key = e.target.value
+    const selectItem = sortOpts[key];
+    setSelected(e.target.value);
+    setVariables(state => ({ ...state, reverse: selectItem.reverse, sortKey: key }))
   }
-  useEffect(()=>{
-    console.log(initData)
-    init({initData})
-  },[])
+
+  useEffect(() => {
+    if (query === variables) return;
+    router.push({ pathname: '/products', query: variables })
+    init({ variables: variables})
+  }, [variables])
+  useEffect(() => {
+    init({ initData })
+  }, [])
+
+
   return (
     <Layout title='Products'>
       <div className={classes.toolbar}>
-        <TextField id="standard-basic" label="Standard" />
+        <TextField id="standard-basic"
+          label="Standard"
+          onBlur={(e) => {
+            setSearchValue(e.target.value)
+            setVariables(state => ({ ...state, query: e.target.value }))
+          }}
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)} />
         <div>
           <InputLabel className='MuiInputLabel-root MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled'>Sort By</InputLabel>
           <Select
@@ -90,16 +73,18 @@ const Products = ({initData}) => {
   )
 }
 
-export async function getStaticProps(context) {
-  
-  const { data } = await getFirstPage({
+export async function getServerSideProps(context) {
+  const query = JSON.stringify(context.query) === '{}' ? {
     query: "",
-    sortKey: "BEST_SELLING",
+    sortKey: 0,
     reverse: false,
-  })
+  } : context.query;
+  const { data } = await getFirstPage({ ...query })
+
   return {
     props: {
-      initData:data.products
+      initData: data.products,
+      query
     }, // will be passed to the page component as props
   }
 }

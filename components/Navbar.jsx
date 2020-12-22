@@ -1,6 +1,7 @@
 import { AppBar, Badge, Button, Container, IconButton, Toolbar, Typography } from "@material-ui/core"
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import { useRouter } from 'next/router'
+import useProducts from '../models/products'
 const NavBar = () => {
   const router = useRouter();
   const handleGoto = (url) => {
