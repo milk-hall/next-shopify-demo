@@ -1,12 +1,20 @@
 import { AppBar, Badge, Button, Container, IconButton, Toolbar, Typography } from "@material-ui/core"
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import { useRouter } from 'next/router'
-import useProducts from '../models/products'
+import { useEffect } from "react";
+import useCarts from '../models/carts';
+
 const NavBar = () => {
   const router = useRouter();
+  const { fetchCheckout ,checkoutNum } = useCarts();
   const handleGoto = (url) => {
     router.push(url)
   }
+
+  useEffect(()=>{
+    fetchCheckout()
+  },[])
+
   return (
     <AppBar position="static" color='primary'>
       <Container>
@@ -17,7 +25,7 @@ const NavBar = () => {
           <Button size='large' color="inherit" onClick={()=>handleGoto('/')}>HOME</Button>
           <Button size='large' color="inherit" onClick={()=>handleGoto('/products')}>PRODUCTS</Button>
           <IconButton size='medium' color="inherit" onClick={()=>handleGoto('/cart')}>
-            <Badge badgeContent={3} color="secondary">
+            <Badge badgeContent={checkoutNum} color="secondary">
               <ShoppingBasketIcon />
             </Badge>
           </IconButton>

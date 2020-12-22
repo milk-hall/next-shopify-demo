@@ -1,7 +1,8 @@
-import { Grid, InputLabel, makeStyles, TextField, Typography, Select, MenuItem, Button } from "@material-ui/core"
+import { Grid, InputLabel, makeStyles, TextField, Typography, Select, MenuItem, Button, CircularProgress } from "@material-ui/core"
+import { useEffect, useState } from "react";
 import { getHandleProduct } from '../../services/api'
 import Layout from '../../components/Layout'
-import { useEffect, useState } from "react";
+import useCarts from '../../models/carts'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const ProductDetail = ({ data }) => {
   const classes = useStyles();
+  const { addLineItem, loading } = useCarts();
   const variants = data.variants.edges.map(({ node }) => ({ ...node }));
   const [values, setValues] = useState({
     variantId: '',
@@ -46,11 +48,10 @@ const ProductDetail = ({ data }) => {
   }
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log(e);
+    addLineItem(values.variantId, values.quantity)
   }
 
-  const handleGetVariantId =variantId => setValues({ ...values, variantId })
+  const handleGetVariantId = variantId => setValues({ ...values, variantId })
 
   useEffect(() => {
     const selectedVariant = variants.find(variant => {
@@ -80,40 +81,49 @@ const ProductDetail = ({ data }) => {
                 <Typography variant="body2" gutterBottom className={classes.item}>
                   {data.description}
                 </Typography>
-                  <TextField
-                    id="standard-number"
-                    label="Number"
-                    type="number"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    className={classes.item}
-                  />
-                  {data.options.map(({ name, values }) => (
-                    <div key={name} className={classes.item}>
-                      <InputLabel className={classes.formLabel} htmlFor={`product-option-${name}`}>
-                        {name}
-                      </InputLabel>
-                      <Select
-                        native
-                        value={selectedOptions[name]}
-                        onChange={handleChangeSelect}
-                        inputProps={{
-                          name: name,
-                          id: `product-option-${name}`
-                        }}
-                      >
-                        {values.map(value => {
-                          return (
-                            <option value={value} key={value}>
-                              {value}
-                            </option>
-                          );
-                        })}
-                      </Select>
-                    </div>
-                  ))}
-                  <Button type='submit' color="primary" variant="contained" className={classes.item}>ADD TO CART</Button>
+                <TextField
+                  id="standard-number"
+                  label="Number"
+                  type="number"
+                  defaultValue={1}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  className={classes.item}
+                  onChange={quantity => setValues({ ...values, quantity })}
+                />
+                {data.options.map(({ name, values }) => (
+                  <div key={name} className={classes.item}>
+                    <InputLabel className={classes.formLabel} htmlFor={`product-option-${name}`}>
+                      {name}
+                    </InputLabel>
+                    <Select
+                      native
+                      value={selectedOptions[name]}
+                      onChange={handleChangeSelect}
+                      inputProps={{
+                        name: name,
+                        id: `product-option-${name}`
+                      }}
+                    >
+                      {values.map(value => {
+                        return (
+                          <option value={value} key={value}>
+                            {value}
+                          </option>
+                        );
+                      })}
+                    </Select>
+                  </div>
+                ))}
+                <Button
+                  onClick={handleSubmit}
+                  color="primary"
+                  variant="contained"
+                  className={classes.item}>
+                  {loading&&<CircularProgress disableShrink size={10} style={{color:'#fff'}} />}
+                  ADD TO CART
+                  </Button>
               </Grid>
             </Grid>
           </Grid>
