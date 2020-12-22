@@ -1,4 +1,4 @@
-import { Button, CircularProgress, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core";
+import { Button, CircularProgress, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@material-ui/core";
 import { useEffect } from "react";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Layout from "../../components/Layout"
@@ -12,14 +12,23 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
+  quantityInput: {
+    maxWidth: 45
+  },
 }));
+
+let timeoutID;
 
 const Cart = () => {
   const classes = useStyles();
-  const { fetchCheckout, data, loading, removeLineItem } = useCarts();
-  
-  const handleDeleteItem = (id)=>{
+  const { fetchCheckout, data, loading, removeLineItem, updateQuantity } = useCarts();
+
+  const handleDeleteItem = (id) => {
     removeLineItem(id)
+  }
+
+  const handleUpdateQuantity = (variantId, quantity) => {
+    updateQuantity(variantId, quantity)
   }
 
   useEffect(() => {
@@ -39,29 +48,40 @@ const Cart = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {!loading&&data?.lineItems.edges.map((row) => (
-                <TableRow key={row.node.id}>
-                  <TableCell component="th" scope="row">
-                    {row.node.title}
-                  </TableCell>
-                  <TableCell align="right">{row.node.quantity}</TableCell>
-                  <TableCell align="right">
-                    <IconButton onClick={()=>handleDeleteItem(row.node.variant.id)} >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {!loading && data?.lineItems.edges.map((row) => (
+              <TableRow key={row.node.id}>
+                <TableCell component="th" scope="row">
+                  {row.node.title}
+                </TableCell>
+                <TableCell align="right">
+                  <TextField
+                    className={classes.quantityInput}
+                    defaultValue={row.node.quantity}
+                    onBlur={(event) => {
+                      const quantity = parseInt(event.target.value || '1');
+                      handleUpdateQuantity(row.node.variant.id, quantity);
+                    }}
+                    type="number"
+                    margin="normal"
+                  />
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton onClick={() => handleDeleteItem(row.node.variant.id)} >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
-        {loading&&<div style={{ textAlign: 'center' }}>
+        {loading && <div style={{ textAlign: 'center' }}>
           <CircularProgress size={30} />
         </div>}
       </TableContainer>
       <Typography paragraph className={classes.title}>Subtotal:${data?.subtotalPriceV2.amount}</Typography>
       <Typography paragraph className={classes.title}>Taxes:${data?.totalTaxV2.amount}</Typography>
       <Typography paragraph className={classes.title}>Total:${data?.totalPriceV2.amount}</Typography>
-      <Button variant='contained' color='primary' href={data.webUrl}>CHECKOUT</Button>
+      <Button variant='contained' color='primary' href={data?.webUrl}>CHECKOUT</Button>
     </Layout>
   )
 }

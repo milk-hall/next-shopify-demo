@@ -249,3 +249,12 @@ export const deleteLineItems = async (variantId,data) => {
   lineItems = lineItems.filter(item=>item.variantId !== variantId)
   return replaceLineItems({ checkoutId, lineItems })
 };
+
+export const updateLineItems = async (variantId,quantity,data) => {
+  let checkoutId;
+  checkoutId = localStorage.getItem("checkoutId");
+  let lineItems = getLineItems(data.lineItems.edges);
+  const lineItemIndex = lineItems.findIndex(item=>item.variantId===variantId);
+  lineItems[lineItemIndex].quantity = quantity;
+  return replaceLineItems({ checkoutId, lineItems })
+};
