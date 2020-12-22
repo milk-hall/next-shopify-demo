@@ -1,7 +1,7 @@
 import { InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core"
 import { useEffect, useState } from "react";
 import Layout from "../../components/Layout"
-import DataCardList from "./components/DataCardList";
+import DataCardList from "../../components/products/DataCardList";
 import useProducts from '../../models/products'
 import { getFirstPage } from "../../services/api";
 import { useRouter } from "next/router";
@@ -80,6 +80,11 @@ export async function getServerSideProps(context) {
     reverse: false,
   } : context.query;
   const { data } = await getFirstPage({ ...query })
+  if (!data) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {

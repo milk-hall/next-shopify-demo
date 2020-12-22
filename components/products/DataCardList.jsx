@@ -1,6 +1,6 @@
 import { Button, CircularProgress, Grid } from "@material-ui/core"
 import DataCard from "./DataCard"
-import useProducts from '../../../models/products'
+import useProducts from '../../models/products'
 import { useRouter } from "next/router"
 
 
@@ -22,7 +22,7 @@ const DataCardList = () => {
             <Grid container spacing={4}>
               {edges?.map((item) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={item.cursor}>
-                  <DataCard {...item} />
+                  <DataCard node={item.node} />
                 </Grid>
               ))}
             </Grid>

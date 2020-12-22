@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createModel } from "hox";
-import { getFirstPage } from "../services/api";
+import { getFirstPage, getHandleProduct } from "../services/api";
 function useProducts() {
+  const ref = useRef(false);
   const [data, setData] = useState({ edges: [], pageInfo: {} });
   const [loading, setLoading] = useState(false);
   const [initLoading, setInitLoading] = useState(false);
   const init = async ({ initData, variables }) => {
+    ref.current=true;
     if (initData) {
       setData(initData);
       return;
@@ -24,13 +26,14 @@ function useProducts() {
     }));
     setLoading(false);
   };
-
+  
   return {
     data,
     loading,
     initLoading,
     init,
     fetchMore,
+    isInit:ref.current,
     // loading,
   };
 }
