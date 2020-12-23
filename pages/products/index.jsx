@@ -1,5 +1,6 @@
 import { InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core"
 import { useEffect, useState } from "react";
+import isServer from 'detect-node';
 import Layout from "../../components/Layout"
 import DataCardList from "../../components/products/DataCardList";
 import useProducts from '../../models/products'
@@ -28,7 +29,7 @@ const Products = ({ initData, query }) => {
     const key = e.target.value
     const selectItem = sortOpts[key];
     setSelected(e.target.value);
-    setVariables(state => ({ ...state, reverse: selectItem.reverse, sortKey: key }))
+    setVariables(state => ({ query:'',sortKey:0,...state, reverse: selectItem.reverse, sortKey: key }))
   }
 
   useEffect(() => {
@@ -73,12 +74,19 @@ const Products = ({ initData, query }) => {
   )
 }
 
-export async function getServerSideProps(context) {
+Products.getInitialProps = async context => {
   const query = JSON.stringify(context.query) === '{}' ? {
     query: "",
     sortKey: 0,
     reverse: false,
   } : context.query;
+  if(!isServer){
+    return {
+      props: {
+        query
+      }, // will be passed to the page component as props
+    }
+  }
   const { data } = await getFirstPage({ ...query })
   if (!data) {
     return {

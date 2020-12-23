@@ -12,6 +12,7 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "deepmerge": "^4.2.2",
+    "detect-node": "^2.0.4",
     "graphql": "^15.4.0",
     "hox": "^1.1.2",
     "lodash": "^4.17.20",
