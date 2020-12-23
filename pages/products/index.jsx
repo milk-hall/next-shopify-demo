@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Products = ({ initData, query }) => {
   const { init } = useProducts()
-  console.log(initData);
   const ref = useRef(false);
   if (!ref.current) {
     init({ initData })
@@ -51,7 +50,7 @@ const Products = ({ initData, query }) => {
           label="Standard"
           onBlur={(e) => {
             setSearchValue(e.target.value)
-            setVariables(state => ({ ...state, query: e.target.value }))
+            setVariables(state => ({ sortKey: 0, ...state, query: e.target.value }))
           }}
           value={searchValue}
           onChange={e => setSearchValue(e.target.value)} />
