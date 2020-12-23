@@ -53,8 +53,7 @@ const Products = ({ initData, query }) => {
             setSearchValue(e.target.value)
             setVariables(state => ({ reverse:'false',sortKey: 0, ...state, query: e.target.value }))
           }}
-          value={searchValue}
-          onChange={e => setSearchValue(e.target.value)} />
+          />
         <div>
           <InputLabel className='MuiInputLabel-root MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled'>Sort By</InputLabel>
           <Select
