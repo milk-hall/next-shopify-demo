@@ -49,8 +49,9 @@ const Products = ({ initData, query }) => {
         <TextField id="standard-basic"
           label="Standard"
           onBlur={(e) => {
+            if(e.target.value===searchValue) return;
             setSearchValue(e.target.value)
-            setVariables(state => ({ sortKey: 0, ...state, query: e.target.value }))
+            setVariables(state => ({ reverse:'false',sortKey: 0, ...state, query: e.target.value }))
           }}
           value={searchValue}
           onChange={e => setSearchValue(e.target.value)} />
