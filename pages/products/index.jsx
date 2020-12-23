@@ -1,5 +1,5 @@
 import { InputLabel, makeStyles, MenuItem, Select, TextField } from "@material-ui/core"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import isServer from 'detect-node';
 import Layout from "../../components/Layout"
 import DataCardList from "../../components/products/DataCardList";
@@ -20,6 +20,12 @@ const useStyles = makeStyles((theme) => ({
 
 const Products = ({ initData, query }) => {
   const { init } = useProducts()
+  console.log(initData);
+  const ref = useRef(false);
+  if (!ref.current) {
+    init({ initData })
+    ref.current = true;
+  }
   const router = useRouter()
   const [selected, setSelected] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -29,18 +35,14 @@ const Products = ({ initData, query }) => {
     const key = e.target.value
     const selectItem = sortOpts[key];
     setSelected(e.target.value);
-    setVariables(state => ({ query:'',sortKey:0,...state, reverse: selectItem.reverse, sortKey: key }))
+    setVariables(state => ({ query: '', sortKey: 0, ...state, reverse: selectItem.reverse, sortKey: key }))
   }
 
   useEffect(() => {
     if (query === variables) return;
     router.push({ pathname: '/products', query: variables })
-    init({ variables: variables})
+    init({ variables: variables })
   }, [variables])
-  useEffect(() => {
-    init({ initData })
-  }, [])
-
 
   return (
     <Layout title='Products'>
@@ -80,23 +82,20 @@ Products.getInitialProps = async context => {
     sortKey: 0,
     reverse: false,
   } : context.query;
-  if(!isServer){
+  if (isServer) {
+    const { data } = await getFirstPage({ ...query })
+    if (!data) {
+      return {
+        notFound: true,
+      }
+    }
     return {
-      props: {
-        query
-      }, // will be passed to the page component as props
+      initData: data.products,
+      query
     }
   }
-  const { data } = await getFirstPage({ ...query })
-  if (!data) {
-    return {
-      notFound: true,
-    }
-  }
-
   return {
     props: {
-      initData: data.products,
       query
     }, // will be passed to the page component as props
   }
